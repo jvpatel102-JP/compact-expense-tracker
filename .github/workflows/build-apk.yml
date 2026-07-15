@@ -1,0 +1,60 @@
+name: Build Android APK
+
+on:
+  push:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Compile Release APK
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+          # This automatically grabs the latest stable Flutter SDK version
+
+      - name: Initialize & Setup Project
+        run: |
+          # 1. Create a dummy Flutter project in build_project folder
+          flutter create --org com.example.expensetracker --project-name expensetracker build_project
+          
+          # 2. Clean out the dummy template lib directory
+          rm -rf build_project/lib
+          
+          # 3. Copy our custom lib folder and pubspec.yaml into the build project
+          cp -r lib build_project/lib
+          cp pubspec.yaml build_project/pubspec.yaml
+          
+          # 4. Inject internet permission to android/app/src/main/AndroidManifest.xml
+          # (Flutter usually includes internet permission, but this guarantees it for release builds)
+          manifest_path="build_project/android/app/src/main/AndroidManifest.xml"
+          sed -i '/<application/i \    <uses-permission android:name="android.permission.INTERNET"/>' "$manifest_path"
+          
+          # 5. Fetch dependencies
+          cd build_project
+          flutter pub get
+
+      - name: Build Release APK
+        run: |
+          cd build_project
+          flutter build apk --release
+
+      - name: Upload Compiled APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: ExpenseTracker-Release-APK
+          path: build_project/build/app/outputs/flutter-apk/app-release.apk
+          if-no-files-found: error
