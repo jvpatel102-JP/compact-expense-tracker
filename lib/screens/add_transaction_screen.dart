@@ -57,12 +57,12 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
         return Theme(
           data: Theme.of(context).copyWith(
             colorScheme: const ColorScheme.dark(
-              primary: Color(0xFF6366F1),
+              primary: Color(0xFF3B82F6),
               onPrimary: Colors.white,
-              surface: Color(0xFF1E2230),
+              surface: Color(0xFF121212),
               onSurface: Colors.white,
             ),
-            dialogBackgroundColor: const Color(0xFF12141C),
+            dialogBackgroundColor: const Color(0xFF000000),
           ),
           child: child!,
         );
@@ -129,7 +129,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
     final isTransfer = _selectedType == TransactionType.transfer;
 
     return Scaffold(
-      backgroundColor: const Color(0xFF12141C),
+      backgroundColor: const Color(0xFF000000),
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -139,7 +139,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
         ),
         title: const Text(
           "NEW TRANSACTION",
-          style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold, letterSpacing: 1.1),
+          style: TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold, letterSpacing: 1.1),
         ),
       ),
       body: Form(
@@ -147,54 +147,54 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
         child: ListView(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           children: [
-            // Transaction Type Selector (Choice Chips)
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                _buildTypeChip(TransactionType.expense, const Color(0xFFEF4444)),
-                const SizedBox(width: 8),
-                _buildTypeChip(TransactionType.income, const Color(0xFF10B981)),
-                const SizedBox(width: 8),
-                _buildTypeChip(TransactionType.transfer, const Color(0xFF8B5CF6)),
-              ],
-            ),
-            const SizedBox(height: 16),
-
-            // Amount Input Field
+            // Amount Input Field (Huge top header input)
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-              decoration: BoxDecoration(
-                color: const Color(0xFF1E2230),
-                borderRadius: BorderRadius.circular(8),
-              ),
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              alignment: Alignment.center,
               child: TextFormField(
                 controller: _amountController,
                 keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                style: const TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold),
+                style: const TextStyle(color: Colors.white, fontSize: 36, fontWeight: FontWeight.w900, letterSpacing: 1.0),
                 textAlign: TextAlign.center,
+                autofocus: true,
                 validator: (val) => val == null || val.isEmpty ? "Required" : null,
                 decoration: InputDecoration(
-                  prefixText: NumberFormat.simpleCurrency().currencySymbol,
-                  prefixStyle: const TextStyle(color: Colors.grey, fontSize: 20),
+                  prefixText: "${NumberFormat.simpleCurrency().currencySymbol} ",
+                  prefixStyle: const TextStyle(color: Colors.white24, fontSize: 24, fontWeight: FontWeight.bold),
                   hintText: "0.00",
-                  hintStyle: TextStyle(color: Colors.white.withOpacity(0.15), fontSize: 24),
+                  hintStyle: TextStyle(color: Colors.white.withOpacity(0.08), fontSize: 36, fontWeight: FontWeight.w900),
                   border: InputBorder.none,
-                  contentPadding: const EdgeInsets.symmetric(vertical: 8),
                 ),
               ),
             ),
             const SizedBox(height: 16),
 
-            // Dropdowns & Date
+            // Form Card
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: const Color(0xFF1E2230),
-                borderRadius: BorderRadius.circular(8),
+                color: const Color(0xFF121212),
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: Colors.white.withOpacity(0.08)),
               ),
               child: Column(
                 children: [
-                  // Row for Category / Account Selection
+                  // Transaction Type Selector (Now a Dropdown as requested)
+                  _buildDropdown(
+                    label: "Transaction Type",
+                    value: _selectedType.name,
+                    items: const ["Expense", "Income", "Transfer"],
+                    onChanged: (val) {
+                      if (val != null) {
+                        setState(() {
+                          _selectedType = TransactionTypeExtension.fromString(val);
+                        });
+                      }
+                    },
+                  ),
+                  const Divider(color: Colors.white10, height: 16),
+
+                  // Category Selector (Only for non-transfers)
                   if (!isTransfer) ...[
                     _buildDropdown(
                       label: "Category",
@@ -205,7 +205,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                     const Divider(color: Colors.white10, height: 16),
                   ],
 
-                  // Account Selector
+                  // Account Selector (From Account)
                   _buildDropdown(
                     label: isTransfer ? "From Account" : "Account",
                     value: _selectedAccount,
@@ -213,7 +213,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                     onChanged: (val) => setState(() => _selectedAccount = val),
                   ),
 
-                  // Destination Account (for Transfers only)
+                  // Destination Account Selector (Only for transfers)
                   if (isTransfer) ...[
                     const Divider(color: Colors.white10, height: 16),
                     _buildDropdown(
@@ -230,18 +230,21 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Text("Date", style: TextStyle(color: Colors.grey, fontSize: 12)),
+                      const Text("Date", style: TextStyle(color: Colors.grey, fontSize: 11, fontWeight: FontWeight.bold)),
                       TextButton.icon(
                         onPressed: _pickDate,
-                        icon: const Icon(Icons.calendar_today, size: 12, color: Color(0xFF6366F1)),
+                        icon: const Icon(Icons.calendar_today, size: 10, color: Color(0xFF3B82F6)),
                         label: Text(
                           DateFormat('MMM dd, yyyy').format(_selectedDate),
-                          style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold),
+                          style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.bold),
                         ),
                         style: TextButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                          backgroundColor: const Color(0xFF12141C),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
+                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                          backgroundColor: const Color(0xFF000000),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(6),
+                            side: BorderSide(color: Colors.white.withOpacity(0.08)),
+                          ),
                         ),
                       )
                     ],
@@ -253,30 +256,31 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
 
             // Notes Input Field
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
               decoration: BoxDecoration(
-                color: const Color(0xFF1E2230),
-                borderRadius: BorderRadius.circular(8),
+                color: const Color(0xFF121212),
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: Colors.white.withOpacity(0.08)),
               ),
               child: TextFormField(
                 controller: _notesController,
-                style: const TextStyle(color: Colors.white, fontSize: 13),
+                style: const TextStyle(color: Colors.white, fontSize: 12),
                 maxLines: 2,
                 decoration: const InputDecoration(
                   hintText: "Add notes (optional)...",
-                  hintStyle: TextStyle(color: Colors.white24, fontSize: 12),
+                  hintStyle: TextStyle(color: Colors.white24, fontSize: 11),
                   border: InputBorder.none,
                 ),
               ),
             ),
             const SizedBox(height: 24),
 
-            // Save Transaction Button
+            // Save Transaction Button (Solid block in blue)
             ElevatedButton(
               onPressed: _saveTransaction,
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF6366F1),
-                padding: const EdgeInsets.symmetric(vertical: 12),
+                backgroundColor: const Color(0xFF3B82F6),
+                padding: const EdgeInsets.symmetric(vertical: 14),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
               ),
               child: const Text(
@@ -290,33 +294,6 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
     );
   }
 
-  Widget _buildTypeChip(TransactionType type, Color activeColor) {
-    final isSelected = _selectedType == type;
-    return ChoiceChip(
-      label: Text(
-        type.name,
-        style: TextStyle(
-          color: isSelected ? Colors.white : Colors.grey,
-          fontSize: 11,
-          fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-        ),
-      ),
-      selected: isSelected,
-      onSelected: (selected) {
-        if (selected) {
-          setState(() {
-            _selectedType = type;
-          });
-        }
-      },
-      selectedColor: activeColor,
-      backgroundColor: const Color(0xFF1E2230),
-      checkmarkColor: Colors.white,
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-    );
-  }
-
   Widget _buildDropdown({
     required String label,
     required String? value,
@@ -326,7 +303,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(label, style: const TextStyle(color: Colors.grey, fontSize: 12)),
+        Text(label, style: const TextStyle(color: Colors.grey, fontSize: 11, fontWeight: FontWeight.bold)),
         const SizedBox(width: 24),
         Expanded(
           child: Align(
@@ -334,9 +311,9 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
             child: DropdownButtonHideUnderline(
               child: DropdownButton<String>(
                 value: value,
-                dropdownColor: const Color(0xFF1E2230),
-                icon: const Icon(Icons.arrow_drop_down, color: Colors.grey, size: 16),
-                style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold),
+                dropdownColor: const Color(0xFF121212),
+                icon: const Icon(Icons.arrow_drop_down, color: Colors.white54, size: 16),
+                style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.bold),
                 alignment: Alignment.centerRight,
                 onChanged: onChanged,
                 items: items.map<DropdownMenuItem<String>>((String val) {

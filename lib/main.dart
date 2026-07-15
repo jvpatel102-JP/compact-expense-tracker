@@ -27,8 +27,8 @@ class ExpenseTrackerApp extends StatelessWidget {
           debugShowCheckedModeBanner: false,
           theme: ThemeData(
             brightness: Brightness.dark,
-            primaryColor: const Color(0xFF6366F1),
-            scaffoldBackgroundColor: const Color(0xFF12141C),
+            primaryColor: const Color(0xFF3B82F6), // Ivy Wallet Blue
+            scaffoldBackgroundColor: const Color(0xFF000000), // Pitch Black
             textTheme: GoogleFonts.interTextTheme(
               ThemeData.dark().textTheme.copyWith(
                 bodyLarge: const TextStyle(color: Colors.white, fontSize: 13),
@@ -36,11 +36,16 @@ class ExpenseTrackerApp extends StatelessWidget {
                 titleMedium: const TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold),
               ),
             ),
+            cardTheme: const CardTheme(
+              color: Color(0xFF121212),
+              elevation: 0,
+              margin: EdgeInsets.zero,
+            ),
             colorScheme: const ColorScheme.dark(
-              primary: Color(0xFF6366F1),
+              primary: Color(0xFF3B82F6),
               secondary: Color(0xFF10B981),
-              surface: Color(0xFF1E2230),
-              background: const Color(0xFF12141C),
+              surface: Color(0xFF121212),
+              background: Color(0xFF000000),
               error: Color(0xFFEF4444),
             ),
             useMaterial3: true,
