@@ -186,7 +186,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
               if (provider.errorMessage.isNotEmpty)
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                  margin: const EdgeInsets.bottom(12),
+                  margin: const EdgeInsets.only(bottom: 12),
                   decoration: BoxDecoration(
                     color: Colors.red.withOpacity(0.15),
                     borderRadius: BorderRadius.circular(6),
